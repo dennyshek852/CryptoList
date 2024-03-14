@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">CryptoList</string>
+    <string name="search_hints">CRYPTOCURRENCY</string>
+    <string name="empty_list_title">No Results</string>
+    <string name="empty_list_subtitle">Try \"USD\"</string>
+    <string name="button_label_clear_data">Clear data</string>
+    <string name="toast_message_clear_data">Cleared data</string>
+    <string name="button_label_insert_data">Insert data</string>
+    <string name="toast_message_insert">Inserted data</string>
+    <string name="button_label_fiat_list">Fiat list</string>
+    <string name="button_label_crypto_list">Crypto list</string>
+    <string name="button_label_all_currency_list">All currency list</string>
 </resources>
