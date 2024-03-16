@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.project.cryptolist.data.datasource.local.currency.CurrencyInfo
 import com.project.cryptolist.data.repository.CurrencyRepository
-import com.project.cryptolist.data.stub.StubHelper
 
 class CurrencyUseCaseImpl(
     private val currencyRepository: CurrencyRepository,
@@ -21,8 +20,12 @@ class CurrencyUseCaseImpl(
         return currencyRepository.getCurrencyList()
     }
 
-    override suspend fun getStubCurrencyList(): List<CurrencyInfo> {
-        val listType = object : TypeToken<List<CurrencyInfo>>() {}.type
-        return Gson().fromJson(StubHelper.stubCurrencyInfoJson, listType)
+    override suspend fun getStubCurrencyList(jsonString: String): List<CurrencyInfo> {
+        return runCatching<List<CurrencyInfo>> {
+            val listType = object : TypeToken<List<CurrencyInfo>>() {}.type
+            Gson().fromJson(jsonString, listType)
+        }.getOrElse {
+            emptyList()
+        }
     }
 }

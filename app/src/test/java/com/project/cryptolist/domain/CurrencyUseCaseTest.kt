@@ -1,7 +1,9 @@
 package com.project.cryptolist.domain
 
 import com.project.cryptolist.MockDataHelper.Companion.mockFullDataList
+import com.project.cryptolist.data.datasource.local.currency.CurrencyInfo
 import com.project.cryptolist.data.repository.CurrencyRepository
+import com.project.cryptolist.data.stub.StubHelper
 import com.project.cryptolist.domain.usecase.currency.CurrencyUseCase
 import com.project.cryptolist.domain.usecase.currency.CurrencyUseCaseImpl
 import io.mockk.Runs
@@ -38,9 +40,19 @@ class CurrencyUseCaseTest {
     fun test_getStubData_returns_valid_list() = runTest(StandardTestDispatcher()) {
         //Given
         //When
-        val result = currencyUseCase.getStubCurrencyList()
+        val result = currencyUseCase.getStubCurrencyList(StubHelper.stubCurrencyInfoJson)
         //Then
         assert(result == mockFullDataList)
+    }
+
+    @Test
+    fun test_getStubData_invalid_returns_empty_list() = runTest(StandardTestDispatcher()) {
+        //Given
+        val stubData = StubHelper.invalidFormatCurrencyInfoJson
+        //When
+        val result = currencyUseCase.getStubCurrencyList(stubData)
+        //Then
+        assert(result == emptyList<CurrencyInfo>())
     }
 
     @Test

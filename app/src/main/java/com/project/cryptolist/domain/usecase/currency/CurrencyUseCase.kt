@@ -6,5 +6,5 @@ interface CurrencyUseCase {
     suspend fun clearCurrencyList()
     suspend fun insertCurrencyList(currencyInfoList: List<CurrencyInfo>)
     suspend fun getCurrencyList(): List<CurrencyInfo>
-    suspend fun getStubCurrencyList(): List<CurrencyInfo>
+    suspend fun getStubCurrencyList(jsonString: String): List<CurrencyInfo>
 }
