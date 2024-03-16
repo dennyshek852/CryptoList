@@ -12,22 +12,22 @@ import com.project.cryptolist.domain.model.CurrencyType
  * @param currencyType The target filter type for the list.
  * @return List of CurrencyDisplayModel
  */
-class CurrencyMapperImpl : CurrencyMapper {
-    override fun getCurrencyDisplayListByType(
-        currencyList: List<CurrencyInfo>,
+class CurrencyMapperImpl : CurrencyMapper<List<CurrencyInfo>, List<CurrencyDisplayModel>> {
+    override fun mapByCurrencyType(
+        from: List<CurrencyInfo>,
         currencyType: CurrencyType
     ): List<CurrencyDisplayModel> {
         return when (currencyType) {
             CurrencyType.All -> {
-                currencyList
+                from
             }
 
             CurrencyType.Crypto -> {
-                currencyList.filter { it.code == null }
+                from.filter { it.code == null }
             }
 
             CurrencyType.Fiat -> {
-                currencyList.filter { it.code != null }
+                from.filter { it.code != null }
             }
         }.map {
             CurrencyDisplayModel(

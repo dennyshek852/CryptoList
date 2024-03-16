@@ -4,6 +4,8 @@ import com.project.cryptolist.MockDataHelper.Companion.mockCryptoDisplayList
 import com.project.cryptolist.MockDataHelper.Companion.mockFiatDisplayList
 import com.project.cryptolist.MockDataHelper.Companion.mockFullDataList
 import com.project.cryptolist.MockDataHelper.Companion.mockFullDisplayList
+import com.project.cryptolist.data.datasource.local.currency.CurrencyInfo
+import com.project.cryptolist.domain.model.CurrencyDisplayModel
 import com.project.cryptolist.domain.model.CurrencyType
 import com.project.cryptolist.presentation.currency.mapper.CurrencyMapper
 import com.project.cryptolist.presentation.currency.mapper.CurrencyMapperImpl
@@ -21,7 +23,7 @@ import org.junit.runners.JUnit4
 class CurrencyMapperTest {
 
     //The class we are going to test
-    private lateinit var currencyMapper: CurrencyMapper
+    private lateinit var currencyMapper: CurrencyMapper<List<CurrencyInfo>, List<CurrencyDisplayModel>>
 
     @Before
     fun setup() {
@@ -32,7 +34,7 @@ class CurrencyMapperTest {
     fun test_getCurrencyDisplayListByType_returns_fiat_list() = runTest(StandardTestDispatcher()) {
         // Given mockData adn currency type is fiat
         // When calling the function on our class.
-        val result = currencyMapper.getCurrencyDisplayListByType(
+        val result = currencyMapper.mapByCurrencyType(
             mockFullDataList,
             CurrencyType.Fiat
         )
@@ -44,7 +46,7 @@ class CurrencyMapperTest {
     fun test_getCurrencyDisplayListByType_returns_crypto_list() =
         runTest(StandardTestDispatcher()) {
             // When calling the function on our class.
-            val result = currencyMapper.getCurrencyDisplayListByType(
+            val result = currencyMapper.mapByCurrencyType(
                 mockFullDataList,
                 CurrencyType.Crypto
             )
@@ -56,7 +58,7 @@ class CurrencyMapperTest {
     fun test_getCurrencyDisplayListByType_returns_all_list() =
         runTest(StandardTestDispatcher()) {
             // When calling the function on our class.
-            val result = currencyMapper.getCurrencyDisplayListByType(
+            val result = currencyMapper.mapByCurrencyType(
                 mockFullDataList,
                 CurrencyType.All
             )

@@ -4,12 +4,14 @@ import com.project.cryptolist.MockDataHelper.Companion.mockCryptoDisplayList
 import com.project.cryptolist.MockDataHelper.Companion.mockFiatDisplayList
 import com.project.cryptolist.MockDataHelper.Companion.mockFullDataList
 import com.project.cryptolist.MockDataHelper.Companion.mockFullDisplayList
+import com.project.cryptolist.data.datasource.local.currency.CurrencyInfo
+import com.project.cryptolist.data.stub.StubHelper
+import com.project.cryptolist.domain.model.CurrencyDisplayModel
 import com.project.cryptolist.domain.model.CurrencyType
 import com.project.cryptolist.domain.usecase.currency.CurrencyUseCase
 import com.project.cryptolist.presentation.currency.mapper.CurrencyMapper
 import com.project.cryptolist.presentation.currency.model.ActionType
 import com.project.cryptolist.presentation.currency.viewmodel.DemoViewModel
-import com.project.cryptolist.presentation.currency.viewmodel.DemoViewModelImpl
 import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -37,7 +39,7 @@ class DemoViewModelTest {
     //Mock currency search use case
     private lateinit var mockCurrencyUseCase: CurrencyUseCase
 
-    private lateinit var mockCurrencyMapper: CurrencyMapper
+    private lateinit var mockCurrencyMapper: CurrencyMapper<List<CurrencyInfo>, List<CurrencyDisplayModel>>
 
     //The class we are going to test
     private lateinit var demoViewModel: DemoViewModel
@@ -46,8 +48,8 @@ class DemoViewModelTest {
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         mockCurrencyUseCase = mockk<CurrencyUseCase>()
-        mockCurrencyMapper = mockk<CurrencyMapper>()
-        demoViewModel = DemoViewModelImpl(mockCurrencyUseCase, mockCurrencyMapper)
+        mockCurrencyMapper = mockk<CurrencyMapper<List<CurrencyInfo>, List<CurrencyDisplayModel>>>()
+        demoViewModel = DemoViewModel(mockCurrencyUseCase, mockCurrencyMapper)
     }
 
     @After
@@ -69,13 +71,13 @@ class DemoViewModelTest {
     }
 
     @Test
-    fun test_onClick_insert_data() = runTest {
+    fun test_onClick_insert_data() = runTest(StandardTestDispatcher()) {
         // This will use runTest's dispatcher
         // Given
         coEvery { mockCurrencyUseCase.getCurrencyList() } returns mockFullDataList
-        coEvery { mockCurrencyUseCase.getStubCurrencyList() } returns mockFullDataList
+        coEvery { mockCurrencyUseCase.getStubCurrencyList(StubHelper.stubCurrencyInfoJson) } returns mockFullDataList
         coEvery {
-            mockCurrencyMapper.getCurrencyDisplayListByType(
+            mockCurrencyMapper.mapByCurrencyType(
                 mockFullDataList,
                 CurrencyType.All
             )
@@ -86,16 +88,16 @@ class DemoViewModelTest {
         // Then
         advanceUntilIdle() // This will use runTest's advanceUntilIdle()
         coVerify { mockCurrencyUseCase.getCurrencyList() }
-        coVerify { mockCurrencyUseCase.getStubCurrencyList() }
+        coVerify { mockCurrencyUseCase.getStubCurrencyList(StubHelper.stubCurrencyInfoJson) }
         coVerify {
-            mockCurrencyMapper.getCurrencyDisplayListByType(
+            mockCurrencyMapper.mapByCurrencyType(
                 mockFullDataList,
                 CurrencyType.All
             )
         }
         coVerify { mockCurrencyUseCase.insertCurrencyList(mockFullDataList) }
         launch {
-            val result = demoViewModel.getDisplayList()
+            val result = demoViewModel.displayList.value
             assert(result == mockFullDisplayList)
         }
     }
@@ -105,25 +107,25 @@ class DemoViewModelTest {
         //Given
         coEvery { mockCurrencyUseCase.getCurrencyList() } returns mockFullDataList
         coEvery {
-            mockCurrencyMapper.getCurrencyDisplayListByType(
+            mockCurrencyMapper.mapByCurrencyType(
                 mockFullDataList,
                 CurrencyType.Fiat
             )
         } returns mockFiatDisplayList
-        val actionType = ActionType.SwitchCurrency(CurrencyType.Fiat)
+        val actionType = ActionType.RouteToCurrencyList(CurrencyType.Fiat)
         //When
         launch { demoViewModel.onClick(actionType) }
         //Then
         advanceUntilIdle()
         coVerify { mockCurrencyUseCase.getCurrencyList() }
         coVerify {
-            mockCurrencyMapper.getCurrencyDisplayListByType(
+            mockCurrencyMapper.mapByCurrencyType(
                 mockFullDataList,
                 CurrencyType.Fiat
             )
         }
         launch {
-            val result = demoViewModel.getDisplayList()
+            val result = demoViewModel.displayList.value
             assert(result == mockFiatDisplayList)
         }
     }
@@ -133,25 +135,25 @@ class DemoViewModelTest {
         //Given
         coEvery { mockCurrencyUseCase.getCurrencyList() } returns mockFullDataList
         coEvery {
-            mockCurrencyMapper.getCurrencyDisplayListByType(
+            mockCurrencyMapper.mapByCurrencyType(
                 mockFullDataList,
                 CurrencyType.Crypto
             )
         } returns mockCryptoDisplayList
-        val actionType = ActionType.SwitchCurrency(CurrencyType.Crypto)
+        val actionType = ActionType.RouteToCurrencyList(CurrencyType.Crypto)
         //When
         launch { demoViewModel.onClick(actionType) }
         //Then
         advanceUntilIdle()
         coVerify { mockCurrencyUseCase.getCurrencyList() }
         coVerify {
-            mockCurrencyMapper.getCurrencyDisplayListByType(
+            mockCurrencyMapper.mapByCurrencyType(
                 mockFullDataList,
                 CurrencyType.Crypto
             )
         }
         launch {
-            val result = demoViewModel.getDisplayList()
+            val result = demoViewModel.displayList.value
             assert(result == mockCryptoDisplayList)
         }
     }

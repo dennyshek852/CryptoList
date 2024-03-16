@@ -24,32 +24,31 @@ class CurrencyDatabaseTest {
     //The class we are going to test
     private lateinit var currencyDatabase: CurrencyDatabase
 
-    private val mockData = listOf(
-        CurrencyInfo(
-            id = "BTC",
-            name = "Bitcoin",
-            symbol = "BTC"
-        ), CurrencyInfo(
-            id = "USD",
-            name = "United States Dollar",
-            symbol = "$",
-            code = "USD"
-        )
-    )
 
     @Before
     fun setup() {
         currencyDatabase = Room.inMemoryDatabaseBuilder(
             InstrumentationRegistry.getInstrumentation().context,
             CurrencyDatabase::class.java
-        )
-            .build()
+        ).build()
         currencyDao = currencyDatabase.currencyDao()
     }
 
     @Test
     fun testDatabaseIsCreated() = runTest(StandardTestDispatcher()) {
-        //given mock data
+        //given
+        val mockData = listOf(
+            CurrencyInfo(
+                id = "BTC",
+                name = "Bitcoin",
+                symbol = "BTC"
+            ), CurrencyInfo(
+                id = "USD",
+                name = "United States Dollar",
+                symbol = "$",
+                code = "USD"
+            )
+        )
         //When
         currencyDao.insertCurrencyList(mockData)
         //Then

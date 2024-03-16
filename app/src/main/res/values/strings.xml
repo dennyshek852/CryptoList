@@ -2,7 +2,8 @@
     <string name="app_name">CryptoList</string>
     <string name="search_hints">CRYPTOCURRENCY</string>
     <string name="empty_list_title">No Results</string>
-    <string name="empty_list_subtitle">Try \"USD\"</string>
+    <string name="empty_fiat_list_subtitle">Try \"USD\"</string>
+    <string name="empty_crypto_list_subtitle">Try \"BTC\"</string>
     <string name="button_label_clear_data">Clear data</string>
     <string name="toast_message_clear_data">Cleared data</string>
     <string name="button_label_insert_data">Insert data</string>
@@ -10,4 +11,9 @@
     <string name="button_label_fiat_list">Fiat list</string>
     <string name="button_label_crypto_list">Crypto list</string>
     <string name="button_label_all_currency_list">All currency list</string>
+    <string name="close_icon">Close icon</string>
+    <string name="search_icon">Search icon</string>
+    <string name="arrow_right_icon">Arrow Right Icon</string>
+    <string name="arrow_back_icon">Arrow Back Icon</string>
+    <string name="search_empty_image">Search empty image</string>
 </resources>

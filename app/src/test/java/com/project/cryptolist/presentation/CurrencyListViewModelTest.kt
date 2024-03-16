@@ -5,7 +5,6 @@ import com.project.cryptolist.MockDataHelper.Companion.mockFullDisplayList
 import com.project.cryptolist.domain.model.CurrencyDisplayModel
 import com.project.cryptolist.domain.usecase.currency.CurrencySearchUseCase
 import com.project.cryptolist.presentation.currency.viewmodel.CurrencyListViewModel
-import com.project.cryptolist.presentation.currency.viewmodel.CurrencyListViewModelImpl
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -35,7 +34,7 @@ class CurrencyListViewModelTest {
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         mockSearchUseCase = mockk<CurrencySearchUseCase>()
-        currencyListViewModel = CurrencyListViewModelImpl(mockSearchUseCase)
+        currencyListViewModel = CurrencyListViewModel(mockSearchUseCase)
     }
 
     @Test
@@ -46,7 +45,7 @@ class CurrencyListViewModelTest {
         launch { currencyListViewModel.cleanSearch() }
         //Then
         advanceUntilIdle()
-        val result = currencyListViewModel.getDisplayList()
+        val result = currencyListViewModel.displayList.value
         assert(result == mockFullDisplayList)
 
     }
@@ -58,7 +57,7 @@ class CurrencyListViewModelTest {
         launch { currencyListViewModel.setCurrencyList(emptyList()) }
         //Then
         advanceUntilIdle()
-        val result = currencyListViewModel.getDisplayList()
+        val result = currencyListViewModel.displayList.value
         assert(result == emptyList<CurrencyDisplayModel>())
     }
 
@@ -78,7 +77,7 @@ class CurrencyListViewModelTest {
             )
         }
         launch {
-            val result = currencyListViewModel.getDisplayList()
+            val result = currencyListViewModel.displayList.value
             assert(result == etPrefixedData)
         }
     }
@@ -94,7 +93,7 @@ class CurrencyListViewModelTest {
         launch { currencyListViewModel.cleanSearch() }
         //Then
         advanceUntilIdle()
-        val result = currencyListViewModel.getDisplayList()
+        val result = currencyListViewModel.displayList.value
         assert(result == mockFullDisplayList)
     }
 }
