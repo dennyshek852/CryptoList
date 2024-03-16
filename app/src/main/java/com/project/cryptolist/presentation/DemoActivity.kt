@@ -19,39 +19,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.project.cryptolist.domain.model.CurrencyType
 import com.project.cryptolist.presentation.currency.model.ActionType
-import com.project.cryptolist.presentation.screen.CurrencyListScreen
+import com.project.cryptolist.presentation.currency.screen.CurrencyListScreen
+import com.project.cryptolist.presentation.currency.viewmodel.CurrencyListViewModel
+import com.project.cryptolist.presentation.currency.viewmodel.DemoViewModel
 import com.project.cryptolist.presentation.theme.CryptoListTheme
-import com.project.cryptolist.presentation.currency.viewmodel.CurrencyListViewModelImpl
-import com.project.cryptolist.presentation.currency.viewmodel.DemoViewModelImpl
-import com.project.cryptolist.presentation.screen.Screen
+import com.project.cryptolist.presentation.theme.PaddingSmall
 import com.test.cryptolist.R
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DemoActivity : ComponentActivity() {
-    private val demoViewModel: DemoViewModelImpl by viewModel<DemoViewModelImpl>()
-    private val currencyListViewModel: CurrencyListViewModelImpl by viewModel<CurrencyListViewModelImpl>()
+    private val demoViewModel: DemoViewModel by viewModel<DemoViewModel>()
+    private val currencyListViewModel: CurrencyListViewModel by viewModel<CurrencyListViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CryptoListTheme {
                 val navController = rememberNavController()
-
-                NavHost(navController, startDestination = Screen.DemoActivity.route) {
-                    composable(Screen.DemoActivity.route) {
-                        DemoScreen(navController, demoViewModel, currencyListViewModel)
+                NavHost(navController, startDestination = Screen.DemoScreen.route) {
+                    composable(Screen.DemoScreen.route) {
+                        DemoScreen(
+                            navController = navController,
+                            demoViewModel = demoViewModel,
+                            currencyListViewModel = currencyListViewModel
+                        )
                     }
 
-                    composable(Screen.CurrencyListFragment.route) {
-                        CurrencyListScreen(currencyListViewModel)
+                    composable(Screen.CurrencyListScreen.route) {
+                        CurrencyListScreen(currencyListViewModel = currencyListViewModel)
                     }
                 }
             }
@@ -62,14 +64,24 @@ class DemoActivity : ComponentActivity() {
 @Composable
 fun DemoScreen(
     navController: NavController,
-    demoViewModel: DemoViewModelImpl,
-    currencyListViewModel: CurrencyListViewModelImpl
+    demoViewModel: DemoViewModel,
+    currencyListViewModel: CurrencyListViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val onActionButtonClick: (ActionType) -> Unit = { actionType ->
+        coroutineScope.launch {
+            demoViewModel.onClick(actionType = actionType)
+            if (actionType is ActionType.RouteToCurrencyList) {
+                navController.navigate(route = Screen.CurrencyListScreen.route) {
+                    launchSingleTop = true
+                }
+            }
+        }
+    }
     // you can collect the state with the `collectAsState` function and use it in your Compose UI.
     val displayList by demoViewModel.displayList.collectAsState()
     LaunchedEffect(displayList) {
-        currencyListViewModel.setCurrencyList(displayList)
+        currencyListViewModel.setCurrencyList(currencyList = displayList)
     }
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -77,38 +89,25 @@ fun DemoScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         ActionButton(
-            R.string.button_label_clear_data,
-            R.string.button_label_clear_data
+            labelRes = R.string.button_label_clear_data,
+            toastRes = R.string.toast_message_clear_data
         ) {
-            coroutineScope.launch {
-                demoViewModel.onClick(actionType = ActionType.ClearData)
-            }
+            onActionButtonClick(ActionType.ClearData)
         }
         ActionButton(
-            R.string.button_label_insert_data,
-            R.string.button_label_insert_data
+            labelRes = R.string.button_label_insert_data,
+            toastRes = R.string.toast_message_insert
         ) {
-            coroutineScope.launch {
-                demoViewModel.onClick(actionType = ActionType.InsertData)
-            }
+            onActionButtonClick(ActionType.InsertData)
         }
-        ActionButton(R.string.button_label_fiat_list) {
-            coroutineScope.launch {
-                demoViewModel.onClick(actionType = ActionType.SwitchCurrency(CurrencyType.Fiat))
-                navController.navigate(Screen.CurrencyListFragment.route)
-            }
+        ActionButton(labelRes = R.string.button_label_fiat_list) {
+            onActionButtonClick(ActionType.RouteToCurrencyList(CurrencyType.Fiat))
         }
-        ActionButton(R.string.button_label_crypto_list) {
-            coroutineScope.launch {
-                demoViewModel.onClick(actionType = ActionType.SwitchCurrency(CurrencyType.Crypto))
-                navController.navigate(Screen.CurrencyListFragment.route)
-            }
+        ActionButton(labelRes = R.string.button_label_crypto_list) {
+            onActionButtonClick(ActionType.RouteToCurrencyList(CurrencyType.Crypto))
         }
-        ActionButton(R.string.button_label_all_currency_list) {
-            coroutineScope.launch {
-                demoViewModel.onClick(actionType = ActionType.SwitchCurrency(CurrencyType.All))
-                navController.navigate(Screen.CurrencyListFragment.route)
-            }
+        ActionButton(labelRes = R.string.button_label_all_currency_list) {
+            onActionButtonClick(ActionType.RouteToCurrencyList(CurrencyType.All))
         }
     }
 }
@@ -122,13 +121,13 @@ fun ActionButton(
     val context = LocalContext.current
     val toastMessage = toastRes?.let { stringResource(id = it) }
     Button(
-        modifier = Modifier.padding(5.dp),
+        modifier = Modifier.padding(PaddingSmall),
         onClick = {
             onClick.invoke()
             toastMessage?.let { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
         }
     ) {
-        Text(stringResource(id = labelRes))
+        Text(text = stringResource(id = labelRes))
     }
 }
 
