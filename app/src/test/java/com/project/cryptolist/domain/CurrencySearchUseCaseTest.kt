@@ -96,12 +96,11 @@ class CurrencySearchUseCaseTest {
 
 
     @Test
-    fun test_search_characters_mismatch_prefix_return_empty_list() =
+    fun test_search_special_characters_mismatch_prefix_return_empty_list() =
         runTest(StandardTestDispatcher()) {
             //Given
-            val keyword = "Android"
+            val keyword = "This has special characters like a single quote ('), double quote (\") backslash (\\), asterisk (*), question mark (?), angle brackets (< >), pipe (|), forward slash (/), colon (:), newline (\\n), tab character (\\t), carriage return (\\r), wildcard characters (?,*) and unicode characters such as \\u263A"
             val mockData = mockFullDisplayList
-            val expectedResult = listOf<CurrencyDisplayModel>()
             //When search
             val result = currencySearchUseCase.search(mockData, keyword)
             //Then verify expected empty list
