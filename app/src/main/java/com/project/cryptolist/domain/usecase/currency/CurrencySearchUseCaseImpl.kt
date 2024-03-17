@@ -8,18 +8,20 @@ class CurrencySearchUseCaseImpl : CurrencySearchUseCase {
         currencyList: List<CurrencyDisplayModel>,
         keywords: String
     ): List<CurrencyDisplayModel> {
+        val trimmedKeywords = keywords.trim()
         return currencyList.filter {
             when {
-                keywords.isEmpty() -> {
+                trimmedKeywords.isEmpty() -> {
                     //Empty no filter needed
                     true
                 }
 
-                keywords.first().isLetterOrDigit() -> {
+                trimmedKeywords.first().isLetterOrDigit() -> {
                     //Escape prevent PatternSyntaxException
-                    val escapeKeyword = Regex.escape(keywords)
+                    val escapeKeyword = Regex.escape(trimmedKeywords)
                     //regex for non special char
-                    val regexPattern = """(?<!\.)\b$escapeKeyword\w*""".toRegex(RegexOption.IGNORE_CASE)
+                    val regexPattern =
+                        """(?<!\.)\b$escapeKeyword\w*""".toRegex(RegexOption.IGNORE_CASE)
                     regexPattern.containsMatchIn(it.id)
                             || regexPattern.containsMatchIn(it.name)
                             || regexPattern.containsMatchIn(it.symbol)
@@ -27,7 +29,7 @@ class CurrencySearchUseCaseImpl : CurrencySearchUseCase {
 
                 else -> {
                     //normal check for special char
-                    keywords == it.symbol
+                    trimmedKeywords == it.symbol
                 }
             }
         }

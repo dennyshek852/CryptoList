@@ -6,6 +6,7 @@ import com.project.cryptolist.MockDataHelper.Companion.ethereumPrefixedData
 import com.project.cryptolist.MockDataHelper.Companion.jpyPrefixedData
 import com.project.cryptolist.MockDataHelper.Companion.mockFullDisplayList
 import com.project.cryptolist.MockDataHelper.Companion.notMatchCoPrefixData
+import com.project.cryptolist.MockDataHelper.Companion.spacePrefixData
 import com.project.cryptolist.MockDataHelper.Companion.spacePrefixedData
 import com.project.cryptolist.domain.model.CurrencyDisplayModel
 import com.project.cryptolist.domain.usecase.currency.CurrencySearchUseCase
@@ -123,6 +124,44 @@ class CurrencySearchUseCaseTest {
             //Then verify expected empty list
             assert(result == expectedData)
             assert(!result.contains(unexpectedData))
+        }
+
+    @Test
+    fun test_search_start_with_space_end_with_space_word_characters_return_valid_list() =
+        runTest(StandardTestDispatcher()) {
+            //Given
+            val keyword = " Binance coin "
+            val expectedData = spacePrefixData
+            val mockData = mockFullDisplayList
+            //When search
+            val result = currencySearchUseCase.search(mockData, keyword)
+            //Then verify expected empty list
+            assert(result == expectedData)
+        }
+
+    @Test
+    fun test_search_with_space_keyword_return_valid_list() =
+        runTest(StandardTestDispatcher()) {
+            //Given
+            val keyword = " "
+            val mockData = mockFullDisplayList
+            //When search
+            val result = currencySearchUseCase.search(mockData, keyword)
+            //Then verify expected empty list
+            assert(result == mockFullDisplayList)
+        }
+
+
+    @Test
+    fun test_search_with_empty_keyword_return_valid_list() =
+        runTest(StandardTestDispatcher()) {
+            //Given
+            val keyword = ""
+            val mockData = mockFullDisplayList
+            //When search
+            val result = currencySearchUseCase.search(mockData, keyword)
+            //Then verify expected empty list
+            assert(result == mockFullDisplayList)
         }
 
 

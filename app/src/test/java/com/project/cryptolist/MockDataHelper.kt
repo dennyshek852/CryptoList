@@ -472,5 +472,12 @@ class MockDataHelper {
             symbol = "CRO"
         )
 
+        val spacePrefixData = listOf(
+            CurrencyDisplayModel(
+                id = "BNB",
+                name = "Binance Coin",
+                symbol = "BNB"
+            )
+        )
     }
 }
