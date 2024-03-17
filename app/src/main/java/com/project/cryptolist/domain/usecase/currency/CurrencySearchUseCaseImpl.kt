@@ -19,7 +19,7 @@ class CurrencySearchUseCaseImpl : CurrencySearchUseCase {
                     //Escape prevent PatternSyntaxException
                     val escapeKeyword = Regex.escape(keywords)
                     //regex for non special char
-                    val regexPattern = """\b$escapeKeyword\w*""".toRegex(RegexOption.IGNORE_CASE)
+                    val regexPattern = """(?<!\.)\b$escapeKeyword\w*""".toRegex(RegexOption.IGNORE_CASE)
                     regexPattern.containsMatchIn(it.id)
                             || regexPattern.containsMatchIn(it.name)
                             || regexPattern.containsMatchIn(it.symbol)

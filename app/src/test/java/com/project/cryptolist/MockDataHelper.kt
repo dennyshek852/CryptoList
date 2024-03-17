@@ -452,5 +452,25 @@ class MockDataHelper {
                 symbol = "¥"
             )
         )
+
+        val coPrefixedData = listOf(
+            CurrencyDisplayModel(
+                id = "BNB",
+                name = "Binance Coin",
+                symbol = "BNB"
+            ),
+            CurrencyDisplayModel(
+                id = "USDC",
+                name = "USD Coin",
+                symbol = "USDC"
+            )
+        )
+
+        val notMatchCoPrefixData = CurrencyDisplayModel(
+            id = "CRO",
+            name = "Crypto.com Chain",
+            symbol = "CRO"
+        )
+
     }
 }

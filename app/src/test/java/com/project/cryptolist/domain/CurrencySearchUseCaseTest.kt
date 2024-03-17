@@ -1,9 +1,11 @@
 package com.project.cryptolist.domain
 
+import com.project.cryptolist.MockDataHelper.Companion.coPrefixedData
 import com.project.cryptolist.MockDataHelper.Companion.etPrefixedData
 import com.project.cryptolist.MockDataHelper.Companion.ethereumPrefixedData
 import com.project.cryptolist.MockDataHelper.Companion.jpyPrefixedData
 import com.project.cryptolist.MockDataHelper.Companion.mockFullDisplayList
+import com.project.cryptolist.MockDataHelper.Companion.notMatchCoPrefixData
 import com.project.cryptolist.MockDataHelper.Companion.spacePrefixedData
 import com.project.cryptolist.domain.model.CurrencyDisplayModel
 import com.project.cryptolist.domain.usecase.currency.CurrencySearchUseCase
@@ -99,12 +101,28 @@ class CurrencySearchUseCaseTest {
     fun test_search_special_characters_mismatch_prefix_return_empty_list() =
         runTest(StandardTestDispatcher()) {
             //Given
-            val keyword = "This has special characters like a single quote ('), double quote (\") backslash (\\), asterisk (*), question mark (?), angle brackets (< >), pipe (|), forward slash (/), colon (:), newline (\\n), tab character (\\t), carriage return (\\r), wildcard characters (?,*) and unicode characters such as \\u263A"
+            val keyword =
+                "This has special characters like a single quote ('), double quote (\") backslash (\\), asterisk (*), question mark (?), angle brackets (< >), pipe (|), forward slash (/), colon (:), newline (\\n), tab character (\\t), carriage return (\\r), wildcard characters (?,*) and unicode characters such as \\u263A"
             val mockData = mockFullDisplayList
             //When search
             val result = currencySearchUseCase.search(mockData, keyword)
             //Then verify expected empty list
             assert(result == listOf<CurrencyDisplayModel>())
+        }
+
+    @Test
+    fun test_search_co_word_characters_return_valid_list() =
+        runTest(StandardTestDispatcher()) {
+            //Given
+            val keyword = "co"
+            val unexpectedData = notMatchCoPrefixData
+            val expectedData = coPrefixedData
+            val mockData = mockFullDisplayList
+            //When search
+            val result = currencySearchUseCase.search(mockData, keyword)
+            //Then verify expected empty list
+            assert(result == expectedData)
+            assert(!result.contains(unexpectedData))
         }
 
 
